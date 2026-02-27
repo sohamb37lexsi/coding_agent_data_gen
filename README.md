@@ -116,29 +116,41 @@ print('Models cached.')
 
 ### 5. Configure the LLM backend
 
-**Option A: Local vLLM (recommended)**
+**Local vLLM (recommended)**
 
-Start your local LLM server:
+**One-time setup:**
 
 ```bash
-vllm serve Qwen/Qwen2.5-Coder-14B-Instruct --dtype auto
+conda create -n qwen_vllm python=3.12 -y
+conda activate qwen_vllm
+conda install -c nvidia cuda-toolkit -y
+pip install vllm openai psutil "transformers<5.0.0" accelerate safetensors
 ```
 
-Then configure the pipeline:
+**Terminal 1 — Start the server:**
 
 ```bash
-export OPENAI_API_KEY="local-token"
+conda activate qwen_vllm
+python -m vllm.entrypoints.openai.api_server \
+    --model Qwen/Qwen2.5-Coder-7B-Instruct \
+    --host 0.0.0.0 --port 8000 \
+    --gpu-memory-utilization 0.5
+```
+
+Wait for: `INFO: Uvicorn running on http://0.0.0.0:8000` — then leave this terminal open.
+
+> `--gpu-memory-utilization 0.5` caps vLLM at 50% VRAM, leaving room for sandbox training. Default is 90%.
+
+**Terminal 2 — Run the pipeline:**
+
+```bash
+export OPENAI_API_KEY="EMPTY"
 export OPENAI_BASE_URL="http://localhost:8000/v1"
-export MODEL_NAME="Qwen/Qwen2.5-Coder-14B-Instruct"
+export MODEL_NAME="Qwen/Qwen2.5-Coder-7B-Instruct"
+python main.py
 ```
 
-**Option B: Cloud API (OpenAI / Anthropic-compatible)**
-
-```bash
-export OPENAI_API_KEY="sk-..."
-export OPENAI_BASE_URL="https://api.openai.com/v1"
-export MODEL_NAME="gpt-4o-mini"
-```
+Stop the server with `Ctrl+C` in Terminal 1 when done.
 
 ---
 
@@ -253,3 +265,9 @@ The sandbox (`sandbox.py`) has three layers:
 | `gpt-4o-mini` (cloud) | — | Good | Fast |
 
 The 14B variant is the sweet spot — noticeably better than 7B at following the API doc constraints, while still fast enough for iterative runs.
+
+---
+
+## License
+
+MIT
