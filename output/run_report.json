@@ -1,0 +1,55 @@
+{
+  "summary": {
+    "total_problems": 100,
+    "solved": 77,
+    "failed": 23,
+    "pass_rate": 0.77,
+    "first_try_passes": 41,
+    "multi_turn_passes": 36,
+    "first_try_rate": 0.532,
+    "avg_turns_solved": 2.05,
+    "avg_turns_failed": 10.0,
+    "total_llm_calls": 388,
+    "wasted_llm_calls": 230
+  },
+  "datasets": {
+    "sft_examples": 77,
+    "dpo_pairs": 51,
+    "quality_pool": 77,
+    "failure_log": 311
+  },
+  "algorithm_coverage": {
+    "sft": 34,
+    "dpo": 20,
+    "drgrpo": 3,
+    "ppo": 9,
+    "grpo": 4,
+    "dapo": 3,
+    "gspo": 4
+  },
+  "failure_categories": {
+    "runtime": 287,
+    "syntax": 1,
+    "type": 22,
+    "timeout": 1
+  },
+  "error_groups": {
+    "\t`load_dataset('openai/gsm8k', 'main')`": 7,
+    "ValueError": 10,
+    "AttributeError": 2,
+    "RuntimeError": 2,
+    "FileNotFoundError": 1,
+    "    value.shape[-1] % 8 != 0": 1
+  },
+  "turn_distribution": {
+    "1": 41,
+    "2": 20,
+    "3": 4,
+    "4": 6,
+    "5": 2,
+    "6": 1,
+    "8": 2,
+    "9": 1,
+    "10": 23
+  }
+}
