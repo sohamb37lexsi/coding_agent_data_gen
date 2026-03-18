@@ -129,12 +129,13 @@ class RAGRetriever:
 
         return results
 
-    def retrieve_api_context(self, problem: str, top_k: int = 5) -> str:
+    def retrieve_api_context(self, problem: str, top_k: int = 8) -> str:
         """
         Replaces the static API docs string with RAG-retrieved context.
+        Retrieves more chunks for richer context.
         """
         chunks = self.search(problem, top_k=top_k, source_filter="api_docs")
-        code_chunks = self.search(problem, top_k=3, source_filter="aligntune")
+        code_chunks = self.search(problem, top_k=5, source_filter="aligntune")
 
         context_parts = ["# Relevant API Documentation\n"]
         for c in chunks:
@@ -146,11 +147,11 @@ class RAGRetriever:
                 label = f"{c.filepath}:{c.name}"
                 if c.parent_class:
                     label = f"{c.filepath}:{c.parent_class}.{c.name}"
-                context_parts.append(f"### {label}\n```python\n{c.content}\n```\n")
+                context_parts.append(f"### {label}\n```python\n{c.content[:1500]}\n```\n")
 
         return "\n".join(context_parts)
 
-    def format_error_context(self, traceback_text: str, max_chars: int = 4000) -> str:
+    def format_error_context(self, traceback_text: str, max_chars: int = 6000) -> str:
         """
         Builds rich error context for the LLM: traceback + relevant source code.
         """
@@ -173,7 +174,7 @@ class RAGRetriever:
                 entry = (
                     f"\n--- [{chunk.source}] {chunk.filepath} :: {chunk.name} "
                     f"(similarity: {chunk.similarity:.3f}) ---\n"
-                    f"{chunk.content[:800]}\n"
+                    f"{chunk.content[:1200]}\n"
                 )
 
                 if char_count + len(entry) > max_chars:
